@@ -1,0 +1,18 @@
+{
+  "name": "Property Defect Inspection & Repair Tracker",
+  "short_name": "Defect Tracker",
+  "description": "Inspect property defects, submit reports, and track repairs from a mobile device.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eef5f3",
+  "theme_color": "#0f766e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/property-defect.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

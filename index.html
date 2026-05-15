@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f766e" />
+    <title>Property Defect Inspection & Repair Tracker</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <style>
+      :root {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #17201f;
+        background: #eef5f3;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; min-height: 100vh; background: #eef5f3; }
+      button, input, select, textarea { font: inherit; }
+      button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+      .app { min-height: 100vh; }
+      .auth { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+      .shell-header { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #dbe7e4; background: rgba(255,255,255,.95); backdrop-filter: blur(10px); }
+      .header-inner, .main { max-width: 1120px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
+      .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; padding-bottom: 12px; }
+      .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+      .brand-icon { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; background: #0f766e; color: #fff; font-weight: 900; }
+      .brand-title { font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .brand-sub { margin-top: 2px; color: #64748b; font-size: 12px; }
+      .main { padding-top: 20px; padding-bottom: 32px; }
+      .grid { display: grid; gap: 18px; }
+      .layout { grid-template-columns: 1fr; }
+      .panel { border: 1px solid #dbe7e4; border-radius: 14px; background: #fff; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.08); }
+      .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+      .section-head h2 { margin: 0; font-size: 16px; }
+      .count { border-radius: 999px; background: #f1f5f9; padding: 5px 10px; color: #475569; font-size: 12px; font-weight: 800; }
+      .field { display: grid; gap: 6px; color: #334155; font-size: 13px; font-weight: 700; }
+      .input { width: 100%; border: 1px solid #dbe7e4; border-radius: 10px; background: #fff; padding: 11px 12px; color: #17201f; outline: none; }
+      .input:focus { border-color: #0f766e; box-shadow: 0 0 0 4px #ccfbf1; }
+      textarea.input { min-height: 94px; resize: vertical; }
+      .btn { min-height: 42px; border: 0; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 13px; font-size: 14px; font-weight: 800; }
+      .primary { background: #0f766e; color: #fff; }
+      .secondary { border: 1px solid #dbe7e4; background: #fff; color: #334155; }
+      .danger { background: #dc2626; color: #fff; }
+      .full { width: 100%; }
+      .icon-btn { width: 42px; height: 42px; border: 1px solid #dbe7e4; border-radius: 10px; background: #fff; }
+      .role-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; border-radius: 11px; background: #f1f5f9; padding: 4px; margin-bottom: 14px; }
+      .role-tab { border: 0; border-radius: 8px; padding: 10px; color: #64748b; background: transparent; font-weight: 800; }
+      .role-tab.active { background: #fff; color: #0f766e; box-shadow: 0 1px 4px rgba(15,23,42,.08); }
+      .stack { display: grid; gap: 12px; }
+      .case-card { width: 100%; border: 1px solid #dbe7e4; border-radius: 12px; background: #fff; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; }
+      .case-card.active { border-color: #0f766e; background: #f0fdfa; box-shadow: 0 0 0 2px #ccfbf1; }
+      .muted { color: #64748b; font-size: 13px; }
+      .badge { border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+      .badge.Draft, .badge.Pending { background: #f1f5f9; color: #475569; }
+      .badge.Submitted { background: #e0f2fe; color: #0369a1; }
+      .badge.InRepair, .badge.InProgress { background: #fef3c7; color: #92400e; }
+      .badge.Repaired { background: #ccfbf1; color: #115e59; }
+      .badge.Rejected { background: #fee2e2; color: #b91c1c; }
+      .badge.Closed { background: #dcfce7; color: #166534; }
+      .floor-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+      .tab { border: 1px solid #dbe7e4; border-radius: 10px; background: #fff; padding: 10px 12px; font-weight: 800; color: #475569; white-space: nowrap; }
+      .tab.active { border-color: #0f766e; color: #0f766e; background: #f0fdfa; }
+      .upload { min-height: 48px; border: 1px dashed #5eead4; border-radius: 10px; background: #f0fdfa; color: #115e59; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; font-weight: 800; text-align: center; }
+      .upload input { display: none; }
+      .matrix-wrap { position: relative; overflow: hidden; border: 1px solid #dbe7e4; border-radius: 12px; background: #f1f5f9; }
+      .layout-img, .layout-placeholder { aspect-ratio: 3 / 4; width: 100%; display: block; object-fit: contain; background: #fff; }
+      .layout-placeholder { display: grid; place-items: center; padding: 24px; color: #64748b; text-align: center; }
+      .matrix { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+      .zone { position: relative; border: 1px solid rgba(255,255,255,.9); background: rgba(15,23,42,.12); color: #17201f; font-size: 16px; font-weight: 900; }
+      .zone.active { background: rgba(20,184,166,.55); color: #fff; }
+      .zone span:first-child { background: rgba(255,255,255,.92); color: #17201f; border-radius: 999px; padding: 5px 10px; }
+      .zone-count { position: absolute; right: 8px; top: 8px; border-radius: 999px; background: #f59e0b; color: #fff; padding: 2px 7px; font-size: 11px; }
+      .defect { border: 1px solid #dbe7e4; border-radius: 12px; background: #fff; padding: 13px; }
+      .defect-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+      .defect h3 { margin: 0; font-size: 16px; }
+      .defect p { margin: 8px 0 0; line-height: 1.55; }
+      .photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+      .photos img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; border: 1px solid #dbe7e4; }
+      .empty { border-radius: 10px; background: #f8fafc; color: #64748b; padding: 12px; font-size: 14px; }
+      .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .repair-box { margin-top: 12px; border-radius: 10px; background: #f0fdfa; padding: 12px; }
+      .report-head { display: flex; flex-direction: column; gap: 14px; }
+      .report-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .filters { display: grid; gap: 10px; }
+      @media (min-width: 900px) {
+        .layout { grid-template-columns: 360px minmax(0, 1fr); align-items: start; }
+        .workspace { grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); }
+        .report-head { flex-direction: row; align-items: flex-start; justify-content: space-between; }
+        .report-actions { display: flex; }
+      }
+      @media print {
+        .shell-header, .sidebar, .no-print, .upload, form, .role-tabs { display: none !important; }
+        body { background: #fff; }
+        .main { max-width: none; padding: 0; }
+        .layout, .workspace { display: block; }
+        .panel, .defect { box-shadow: none; break-inside: avoid; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      const key = "property-defect-preview:data";
+      const sessionKey = "property-defect-preview:session:v3";
+      const zones = Array.from({ length: 9 }, (_, i) => i + 1);
+      const floorNames = ["Ground Floor", "First Floor", "Second Floor", "Roof", "Yard", "Other"];
+      const categories = ["Crack", "Leakage", "Paint / Finishing", "Door / Window", "Electrical", "Plumbing", "Tiles / Flooring", "Ceiling / Roof", "Safety", "Other"];
+      const statuses = ["Pending", "In Progress", "Repaired", "Rejected", "Closed"];
+      const now = () => new Date().toISOString();
+      const id = (prefix) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+      const initial = {
+        users: [
+          { id: "admin_demo", email: "owner@example.com", name: "Owner Admin", role: "admin", createdAt: now() },
+          { id: "buyer_demo", email: "buyer@example.com", name: "Demo Buyer", phone: "+60 12-345 6789", role: "buyer", createdAt: now() },
+          { id: "developer_demo", email: "developer@example.com", name: "Demo Developer", role: "developer", createdBy: "admin_demo", createdAt: now() }
+        ],
+        projects: [
+          { id: "proj_demo_1", name: "Seri Damai Residence", developerId: "developer_demo", propertyType: "Terrace House", address: "Jalan Damai 1, Kuala Lumpur", units: ["A-01", "A-02", "B-01", "B-02"], description: "Demo property list for buyer inspection selection.", createdAt: now() }
+        ],
+        properties: [], inspections: [], floors: [], defects: [], history: [], notifications: []
+      };
+      const hashPassword = (password) => `local:${btoa(unescape(encodeURIComponent(password)))}`;
+      initial.users[0].username = "owner";
+      initial.users[0].passwordHash = hashPassword("owner123");
+      initial.users[1].username = "buyer1";
+      initial.users[1].passwordHash = hashPassword("buyer123");
+      initial.users[2].username = "devadmin";
+      initial.users[2].passwordHash = hashPassword("admin123");
+      let data = JSON.parse(localStorage.getItem(key) || "null") || initial;
+      let migrated = false;
+      data.users = data.users.map((u) => {
+        if (u.username && u.passwordHash) return u;
+        migrated = true;
+        return { ...u, username: u.role === "developer" ? "devadmin" : u.role === "admin" ? "owner" : "buyer1", passwordHash: hashPassword(u.role === "developer" ? "admin123" : u.role === "admin" ? "owner123" : "buyer123") };
+      });
+      if (!data.users.some((u) => u.username === "owner")) { data.users.unshift(initial.users[0]); migrated = true; }
+      if (!data.users.some((u) => u.username === "devadmin")) { data.users.push(initial.users[2]); migrated = true; }
+      if (!data.projects) { data.projects = initial.projects; migrated = true; }
+      if (migrated) localStorage.setItem(key, JSON.stringify(data));
+      let session = JSON.parse(localStorage.getItem(sessionKey) || "null");
+      let ui = { role: "buyer", authMode: "login", selectedInspectionId: null, selectedFloorId: null, selectedZone: 1, filterQuery: "", filterStatus: "All", dateFrom: "", dateTo: "", authError: "", accountMessage: "", projectMessage: "" };
+      const save = () => localStorage.setItem(key, JSON.stringify(data));
+      const setSession = (value) => { session = value; value ? localStorage.setItem(sessionKey, JSON.stringify(value)) : localStorage.removeItem(sessionKey); render(); };
+      const user = () => data.users.find((u) => u.id === session?.userId);
+      const fileUrls = (files) => Promise.all([...files].map((file) => new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = () => {
+          const dataUrl = String(r.result);
+          if (!file.type.startsWith("image/")) { resolve(dataUrl); return; }
+          const img = new Image();
+          img.onload = () => {
+            const maxSide = 1280;
+            const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.max(1, Math.round(img.width * scale));
+            canvas.height = Math.max(1, Math.round(img.height * scale));
+            const ctx = canvas.getContext("2d");
+            if (!ctx) { resolve(dataUrl); return; }
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL("image/jpeg", 0.82));
+          };
+          img.onerror = () => resolve(dataUrl);
+          img.src = dataUrl;
+        };
+        r.readAsDataURL(file);
+      })));
+      const badgeClass = (status) => "badge " + status.replace(/\s/g, "");
+      const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
+      const selectedInspection = () => {
+        const current = user();
+        if (!current) return null;
+        const pool = current.role === "buyer" ? data.inspections.filter((i) => i.buyerId === current.id) : current.role === "admin" ? [] : filteredReports();
+        return data.inspections.find((i) => i.id === ui.selectedInspectionId) || pool.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0] || null;
+      };
+      const filteredReports = () => data.inspections.filter((i) => i.status !== "Draft").filter((i) => {
+        const p = data.properties.find((x) => x.id === i.propertyId);
+        const project = data.projects.find((x) => x.id === p?.projectId);
+        if (user()?.role === "developer" && project && project.developerId !== user().id) return false;
+        const hay = `${p?.projectName} ${p?.unitNumber} ${p?.buyerName}`.toLowerCase();
+        const reportDate = (i.submittedAt || i.createdAt).slice(0, 10);
+        return hay.includes(ui.filterQuery.toLowerCase()) && (ui.filterStatus === "All" || i.status === ui.filterStatus) && (!ui.dateFrom || reportDate >= ui.dateFrom) && (!ui.dateTo || reportDate <= ui.dateTo);
+      });
+      function log(defect, fromStatus, toStatus, note) {
+        data.history.push({ id: id("hist"), defectId: defect.id, fromStatus, toStatus, changedBy: user().id, role: user().role, note, createdAt: now() });
+      }
+      function render() {
+        const current = user();
+        document.getElementById("app").innerHTML = current ? shell2(current) : auth2();
+        bind();
+      }
+      function auth() {
+        return `<main class="auth"><section class="panel" style="max-width:440px;width:100%">
+          <div class="brand" style="margin-bottom:18px"><div class="brand-icon">✓</div><div><div class="brand-title">Property Defect Inspection & Repair Tracker</div><div class="brand-sub">Mobile inspection and repair workflow MVP</div></div></div>
+          <div class="role-tabs"><button class="role-tab ${ui.role === "buyer" ? "active" : ""}" data-role="buyer">Buyer</button><button class="role-tab ${ui.role === "developer" ? "active" : ""}" data-role="developer">Developer</button></div>
+          <form id="authForm" class="stack">
+            <label class="field">Username<input class="input" name="username" autocomplete="username" required value="${ui.role === "buyer" ? "buyer1" : "devadmin"}"></label>
+            <label class="field">Password<input class="input" type="password" name="password" autocomplete="current-password" required value="${ui.role === "buyer" ? "buyer123" : "admin123"}"></label>
+            ${ui.authError ? `<p class="empty" style="background:#fee2e2;color:#b91c1c;font-weight:800">${esc(ui.authError)}</p>` : ""}
+            <p class="empty">Demo credentials: buyer1 / buyer123, devadmin / admin123. New accounts are assigned by developers.</p>
+            <button class="btn primary full">Log in</button>
+          </form>
+        </section></main>`;
+      }
+      function shell(current) {
+        return `<div class="app"><header class="shell-header"><div class="header-inner"><div class="brand"><div class="brand-icon">✓</div><div><div class="brand-title">Property Defect Tracker</div><div class="brand-sub">${esc(current.name)} - ${current.role === "developer" ? "Developer" : "Buyer"}</div></div></div><button class="icon-btn" id="logout" title="Log out">↗</button></div></header><main class="main"><div class="panel no-print" style="margin-bottom:18px;color:#475569">Backend mode: Local MVP storage. React/Supabase source files are in the project folder.</div>${current.role === "buyer" ? buyer(current) : developer(current)}</main></div>`;
+      }
+      function buyer(current) {
+        const inspections = data.inspections.filter((i) => i.buyerId === current.id).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+        const selected = selectedInspection();
+        return `<div class="grid layout"><aside class="sidebar stack">${newCaseForm()}${caseList(inspections, "My inspections")}</aside>${selected ? workspace(selected) : empty()}</div>`;
+      }
+      function newCaseForm() {
+        return `<form class="panel stack" id="newCase"><div class="section-head"><h2>New inspection</h2><span class="count">+</span></div>
+          <label class="field">Project name<input class="input" name="projectName" required placeholder="e.g. Taman Seri Aman"></label>
+          <label class="field">Unit number<input class="input" name="unitNumber" required placeholder="e.g. A-12-03"></label>
+          <label class="field">Buyer name<input class="input" name="buyerName" required></label>
+          <label class="field">Contact number<input class="input" name="contactNumber" required></label>
+          <button class="btn primary full">Create case</button>
+        </form>`;
+      }
+      function developer() {
+        const reports = filteredReports().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+        const selected = selectedInspection();
+        return `<div class="grid layout"><aside class="sidebar stack"><section class="panel"><div class="section-head"><h2>Developer dashboard</h2><span class="count">${reports.length}</span></div><div class="filters">
+          <input class="input" id="filterQuery" value="${esc(ui.filterQuery)}" placeholder="Filter project, unit, buyer">
+          <select class="input" id="filterStatus">${["All", "Submitted", "In Repair", "Closed"].map((s) => `<option ${ui.filterStatus === s ? "selected" : ""}>${s}</option>`).join("")}</select>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><label class="field">From<input class="input" type="date" id="dateFrom" value="${ui.dateFrom}"></label><label class="field">To<input class="input" type="date" id="dateTo" value="${ui.dateTo}"></label></div>
+          ${caseList(reports, "", false)}
+        </div></section>${accountManager()}</aside>${selected ? workspace(selected) : empty()}</div>`;
+      }
+      function accountManager() {
+        const assigned = data.users.filter((u) => u.createdBy === user().id || u.id === user().id);
+        return `<section class="panel"><div class="section-head"><h2>Assign login</h2><span class="count">${data.users.length}</span></div><form id="accountForm" class="stack">
+          <div class="role-tabs"><button type="button" class="role-tab ${ui.accountRole === "buyer" ? "active" : ""}" data-account-role="buyer">Buyer</button><button type="button" class="role-tab ${ui.accountRole === "developer" ? "active" : ""}" data-account-role="developer">Developer</button></div>
+          <input class="input" name="name" required placeholder="Full name">
+          <input class="input" name="username" required autocomplete="off" placeholder="Username">
+          <input class="input" name="password" required type="password" placeholder="Temporary password">
+          <input class="input" name="email" required type="email" placeholder="Email">
+          ${ui.accountRole === "buyer" ? `<input class="input" name="phone" placeholder="Buyer contact number">` : ""}
+          ${ui.accountMessage ? `<p class="empty" style="font-weight:800">${esc(ui.accountMessage)}</p>` : ""}
+          <button class="btn primary full">Create login</button>
+        </form><div class="stack" style="margin-top:12px">${assigned.map((u) => `<div class="empty"><strong>${esc(u.name)}</strong><br>${esc(u.username)} - ${u.role}</div>`).join("")}</div></section>`;
+      }
+      function caseList(inspections, title, wrap = true) {
+        const body = `<div class="stack">${inspections.map((i) => {
+          const p = data.properties.find((x) => x.id === i.propertyId);
+          const defects = data.defects.filter((d) => d.inspectionId === i.id);
+          return `<button class="case-card ${selectedInspection()?.id === i.id ? "active" : ""}" data-case="${i.id}"><span style="min-width:0"><strong style="display:block;overflow:hidden;text-overflow:ellipsis">${esc(p?.projectName || "Untitled project")}</strong><span class="muted">Unit ${esc(p?.unitNumber || "-")} - ${defects.length} defects</span></span><span class="${badgeClass(i.status)}">${i.status}</span></button>`;
+        }).join("") || `<p class="empty">No reports yet.</p>`}</div>`;
+        return wrap ? `<section class="panel"><div class="section-head"><h2>${title}</h2><span class="count">${inspections.length}</span></div>${body}</section>` : body;
+      }
+      function workspace(inspection) {
+        const p = data.properties.find((x) => x.id === inspection.propertyId);
+        const floors = data.floors.filter((f) => f.inspectionId === inspection.id);
+        const floor = floors.find((f) => f.id === ui.selectedFloorId) || floors[0];
+        if (!p || !floor) return empty();
+        ui.selectedFloorId = floor.id;
+        const allDefects = data.defects.filter((d) => d.inspectionId === inspection.id);
+        const floorDefects = allDefects.filter((d) => d.floorId === floor.id);
+        const zoneDefects = floorDefects.filter((d) => d.zoneNumber === ui.selectedZone);
+        const isDraftBuyer = user().role === "buyer" && inspection.status === "Draft";
+        const counts = Object.fromEntries(zones.map((z) => [z, floorDefects.filter((d) => d.zoneNumber === z).length]));
+        return `<section class="stack">
+          <div class="panel report-head"><div><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><span class="${badgeClass(inspection.status)}">${inspection.status}</span><span class="muted">${allDefects.length} defects</span></div><h1 style="margin:0;font-size:24px">${esc(p.projectName)}</h1><p class="muted">Unit ${esc(p.unitNumber)} - ${esc(p.buyerName)} - ${esc(p.contactNumber)}</p></div><div class="report-actions no-print"><button class="btn secondary" id="pdf">PDF</button>${isDraftBuyer && allDefects.length ? `<button class="btn primary" id="submitReport">Submit</button>` : ""}</div></div>
+          <div class="grid workspace"><div class="stack"><section class="panel">${floorTabs(floors, isDraftBuyer)}${layoutPanel(floor, counts)}</section></div><section class="panel stack"><div class="section-head"><h2>Zone ${ui.selectedZone}</h2><span class="count">${zoneDefects.length} defects</span></div>${isDraftBuyer ? defectForm() : ""}${zoneDefects.map(defectCard).join("") || `<p class="empty">No defects in this matrix area.</p>`}</section></div>
+        </section>`;
+      }
+      function floorTabs(floors, canAdd) {
+        const selected = floors.find((f) => f.id === ui.selectedFloorId) || floors[0];
+        const edit = selected ? `<form id="editFloor" style="border:1px solid #dbe7e4;border-radius:12px;background:#f8fafc;padding:12px;margin:12px 0;display:grid;gap:8px"><strong class="muted">Edit selected floor</strong><select class="input" name="floorName">${floorNames.map((f) => `<option ${selected.name === f ? "selected" : ""}>${f}</option>`).join("")}</select><input class="input" name="otherName" value="${esc(selected.otherName || "")}" placeholder="Custom floor name"><button class="btn secondary">Save floor name</button></form>` : "";
+        return `<div class="floor-tabs">${floors.map((f) => `<button class="tab ${ui.selectedFloorId === f.id ? "active" : ""}" data-floor="${f.id}">${esc(f.otherName || f.name)}</button>`).join("")}</div>${canAdd ? `${edit}<form id="addFloor" style="display:grid;gap:8px;margin:12px 0;grid-template-columns:1fr 1fr auto"><select class="input" name="floorName">${floorNames.map((f) => `<option>${f}</option>`).join("")}</select><input class="input" name="otherName" placeholder="Other floor name"><button class="btn secondary">Add</button></form>` : ""}`;
+      }
+      function layoutPanel(floor, counts) {
+        return `<div class="section-head"><h2>${esc(floor.otherName || floor.name)}</h2><span class="count">3 x 3 portrait</span></div>${user().role === "buyer" && selectedInspection().status === "Draft" ? `<div style="display:grid;gap:8px;grid-template-columns:1fr ${floor.layoutPhotoUrl ? "auto" : ""}"><label class="upload">${floor.layoutPhotoUrl ? "Replace layout photo" : "Upload or take layout photo"}<input type="file" id="layoutUpload" accept="image/*" capture="environment"></label>${floor.layoutPhotoUrl ? `<button class="btn danger" id="layoutDelete" type="button">Delete</button>` : ""}</div>` : ""}<div class="matrix-wrap">${floor.layoutPhotoUrl ? `<img class="layout-img" src="${floor.layoutPhotoUrl}" alt="Floor layout">` : `<div class="layout-placeholder">Upload or capture a portrait layout plan to place the inspection matrix.</div>`}<div class="matrix">${zones.map((z) => `<button class="zone ${ui.selectedZone === z ? "active" : ""}" data-zone="${z}"><span>${z}</span>${counts[z] ? `<span class="zone-count">${counts[z]}</span>` : ""}</button>`).join("")}</div></div>`;
+      }
+      function defectForm() {
+        return `<form id="defectForm" class="stack" style="border:1px solid #dbe7e4;border-radius:12px;background:#f8fafc;padding:12px"><input class="input" name="title" required placeholder="Defect title"><select class="input" name="category">${categories.map((c) => `<option>${c}</option>`).join("")}</select><textarea class="input" name="description" required placeholder="Describe the defect"></textarea><label class="upload">Add camera or gallery photos<input type="file" name="photos" accept="image/*" capture="environment" multiple></label><button class="btn primary full">Add defect</button></form>`;
+      }
+      function defectCard(defect) {
+        const repair = defect.repairRemarks || defect.contractor || defect.repairPhotoUrls.length;
+        return `<article class="defect"><div class="defect-top"><div><h3>${esc(defect.title)}</h3><div class="muted">${esc(defect.category)}</div></div><span class="${badgeClass(defect.status)}">${defect.status}</span></div><p>${esc(defect.description)}</p><p class="muted">Created ${new Date(defect.createdAt).toLocaleString()}</p><p class="muted" style="font-weight:800;text-transform:uppercase">Buyer photos</p>${photoGrid(defect.buyerPhotoUrls)}
+        ${repair ? `<div class="repair-box"><strong>Repair update</strong><p>${esc(defect.repairRemarks || "No remarks yet.")}</p><p class="muted">PIC: ${esc(defect.contractor || "-")}</p>${photoGrid(defect.repairPhotoUrls)}</div>` : ""}
+        ${user().role === "developer" ? repairForm(defect) : ""}
+        ${user().role === "buyer" && defect.status === "Repaired" ? `<div class="actions no-print" style="margin-top:12px"><button class="btn primary" data-accept="${defect.id}">Accept</button><button class="btn danger" data-reject="${defect.id}">Reject</button></div>` : ""}
+        <details style="margin-top:10px"><summary class="muted" style="font-weight:800">Status history</summary><ol class="muted">${data.history.filter((h) => h.defectId === defect.id).map((h) => `<li>${new Date(h.createdAt).toLocaleString()} - ${h.toStatus} - ${h.role}</li>`).join("")}</ol></details></article>`;
+      }
+      function repairForm(defect) {
+        return `<form class="stack no-print repairForm" data-defect="${defect.id}" style="margin-top:12px;border:1px solid #dbe7e4;border-radius:12px;background:#f8fafc;padding:12px"><select class="input" name="status">${statuses.map((s) => `<option ${defect.status === s ? "selected" : ""}>${s}</option>`).join("")}</select><input class="input" name="contractor" value="${esc(defect.contractor || "")}" placeholder="Contractor / person-in-charge"><textarea class="input" name="remarks" placeholder="Repair remarks">${esc(defect.repairRemarks || "")}</textarea><label class="upload">Upload after-repair photos<input type="file" name="photos" accept="image/*" capture="environment" multiple></label><button class="btn primary full">Save repair update</button></form>`;
+      }
+      function photoGrid(photos) {
+        return photos?.length ? `<div class="photos">${photos.map((p, i) => `<img src="${p}" alt="Inspection photo ${i + 1}">`).join("")}</div>` : `<p class="empty">No photos uploaded.</p>`;
+      }
+      function empty() { return `<section class="panel" style="min-height:260px;display:grid;place-items:center;text-align:center"><div><strong>No inspection selected</strong><p class="muted">Select or create a case to begin.</p></div></section>`; }
+      function auth2() {
+        const isRegister = ui.role === "buyer" && ui.authMode === "register";
+        const defaultUser = ui.role === "buyer" ? "buyer1" : ui.role === "developer" ? "devadmin" : "owner";
+        const defaultPass = ui.role === "buyer" ? "buyer123" : ui.role === "developer" ? "admin123" : "owner123";
+        return `<main class="auth"><section class="panel" style="max-width:440px;width:100%">
+          <div class="brand" style="margin-bottom:18px"><div class="brand-icon">OK</div><div><div class="brand-title">Property Defect Inspection & Repair Tracker</div><div class="brand-sub">Website model for buyers, developers, and admin</div></div></div>
+          <div class="role-tabs" style="grid-template-columns:repeat(3,1fr)"><button class="role-tab ${ui.role === "buyer" ? "active" : ""}" data-role="buyer">Buyer</button><button class="role-tab ${ui.role === "developer" ? "active" : ""}" data-role="developer">Developer</button><button class="role-tab ${ui.role === "admin" ? "active" : ""}" data-role="admin">Admin</button></div>
+          ${ui.role === "buyer" ? `<div class="role-tabs"><button class="role-tab ${ui.authMode === "login" ? "active" : ""}" data-auth-mode="login">Login</button><button class="role-tab ${ui.authMode === "register" ? "active" : ""}" data-auth-mode="register">Free register</button></div>` : ""}
+          <form id="${isRegister ? "registerForm" : "authForm"}" class="stack">
+            ${isRegister ? `<label class="field">Buyer name<input class="input" name="name" required></label><label class="field">Email<input class="input" type="email" name="email" required></label><label class="field">Contact number<input class="input" name="phone"></label>` : ""}
+            <label class="field">Username<input class="input" name="username" autocomplete="username" required value="${isRegister ? "" : defaultUser}"></label>
+            <label class="field">Password<input class="input" type="password" name="password" autocomplete="${isRegister ? "new-password" : "current-password"}" required value="${isRegister ? "" : defaultPass}"></label>
+            ${ui.authError ? `<p class="empty" style="background:#fee2e2;color:#b91c1c;font-weight:800">${esc(ui.authError)}</p>` : ""}
+            <p class="empty">Buyer registration is free. Seller/developer access is created by admin. Demo: owner / owner123, devadmin / admin123, buyer1 / buyer123.</p>
+            <button class="btn primary full">${isRegister ? "Register free" : "Log in"}</button>
+          </form>
+        </section></main>`;
+      }
+      function shell2(current) {
+        const roleLabel = current.role === "developer" ? "Developer" : current.role === "admin" ? "Admin" : "Buyer";
+        return `<div class="app"><header class="shell-header"><div class="header-inner"><div class="brand"><div class="brand-icon">OK</div><div><div class="brand-title">Property Defect Tracker</div><div class="brand-sub">${esc(current.name)} - ${roleLabel}</div></div></div><button class="icon-btn" id="logout" title="Log out">Out</button></div></header><main class="main"><div class="panel no-print" style="margin-bottom:18px;color:#475569">Backend mode: Local MVP storage. React/Supabase source files are in the project folder.</div>${current.role === "admin" ? admin2() : current.role === "buyer" ? buyer2(current) : developer2(current)}</main></div>`;
+      }
+      function buyer2(current) {
+        const inspections = data.inspections.filter((i) => i.buyerId === current.id).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+        const selected = selectedInspection();
+        return `<div class="grid layout"><aside class="sidebar stack">${newCaseForm2()}${caseList(inspections, "My inspections")}</aside>${selected ? workspace(selected) : empty()}</div>`;
+      }
+      function newCaseForm2() {
+        const options = data.projects.map((p) => `<option value="${p.id}">${esc(p.name)}</option>`).join("");
+        return `<form class="panel stack" id="newCase"><div class="section-head"><h2>New inspection</h2><span class="count">${data.projects.length}</span></div>
+          <label class="field">Project / property<select class="input" name="projectId" required>${options}</select></label>
+          ${data.projects.length ? `<p class="empty">Choose from projects published by developers.</p>` : `<p class="empty">No project is available yet. Please wait for developer project details.</p>`}
+          <label class="field">Unit number<input class="input" name="unitNumber" required placeholder="e.g. A-12-03"></label>
+          <label class="field">Buyer name<input class="input" name="buyerName" required value="${esc(user().name)}"></label>
+          <label class="field">Contact number<input class="input" name="contactNumber" required value="${esc(user().phone || "")}"></label>
+          <button class="btn primary full" ${data.projects.length ? "" : "disabled"}>Create case</button>
+        </form>`;
+      }
+      function developer2() {
+        const reports = filteredReports().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+        const selected = selectedInspection();
+        return `<div class="grid layout"><aside class="sidebar stack"><section class="panel"><div class="section-head"><h2>Developer dashboard</h2><span class="count">${reports.length}</span></div><div class="filters">
+          <input class="input" id="filterQuery" value="${esc(ui.filterQuery)}" placeholder="Filter project, unit, buyer">
+          <select class="input" id="filterStatus">${["All", "Submitted", "In Repair", "Closed"].map((s) => `<option ${ui.filterStatus === s ? "selected" : ""}>${s}</option>`).join("")}</select>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><label class="field">From<input class="input" type="date" id="dateFrom" value="${ui.dateFrom}"></label><label class="field">To<input class="input" type="date" id="dateTo" value="${ui.dateTo}"></label></div>
+          ${caseList(reports, "", false)}
+        </div></section>${projectManager2()}</aside>${selected ? workspace(selected) : empty()}</div>`;
+      }
+      function admin2() {
+        const developers = data.users.filter((u) => u.role === "developer");
+        const buyers = data.users.filter((u) => u.role === "buyer");
+        return `<div class="grid layout"><aside class="sidebar stack">${accountManager2()}</aside><section class="stack"><div class="grid" style="grid-template-columns:repeat(3,1fr)"><div class="panel"><p class="muted">Developers</p><h2>${developers.length}</h2></div><div class="panel"><p class="muted">Buyers</p><h2>${buyers.length}</h2></div><div class="panel"><p class="muted">Projects</p><h2>${data.projects.length}</h2></div></div><section class="panel"><div class="section-head"><h2>Developer users</h2><span class="count">${developers.length}</span></div><div class="stack">${developers.map((d) => `<div class="empty"><strong>${esc(d.name)}</strong><br>${esc(d.username)} - ${esc(d.email)}</div>`).join("")}</div></section><section class="panel"><div class="section-head"><h2>Project reference list</h2><span class="count">${data.projects.length}</span></div><div class="stack">${data.projects.map((p) => `<div class="empty"><strong>${esc(p.name)}</strong><br>${esc(p.propertyType)} - ${esc(p.address)}<br>${p.units.length} units</div>`).join("")}</div></section></section></div>`;
+      }
+      function accountManager2() {
+        const assigned = data.users.filter((u) => u.createdBy === user().id && u.role === "developer");
+        return `<section class="panel"><div class="section-head"><h2>Admin developer access</h2><span class="count">${assigned.length}</span></div><form id="accountForm" class="stack"><p class="empty">Only admin can create seller/developer login access. Buyers register free.</p><input class="input" name="name" required placeholder="Developer / seller name"><input class="input" name="username" required autocomplete="off" placeholder="Username"><input class="input" name="password" required type="password" placeholder="Temporary password"><input class="input" name="email" required type="email" placeholder="Email">${ui.accountMessage ? `<p class="empty" style="font-weight:800">${esc(ui.accountMessage)}</p>` : ""}<button class="btn primary full">Create developer</button></form><div class="stack" style="margin-top:12px">${assigned.map((u) => `<div class="empty"><strong>${esc(u.name)}</strong><br>${esc(u.username)} - developer</div>`).join("")}</div></section>`;
+      }
+      function projectManager2() {
+        const projects = data.projects.filter((p) => p.developerId === user().id);
+        return `<section class="panel"><div class="section-head"><h2>Project details</h2><span class="count">${projects.length}</span></div><form id="projectForm" class="stack"><input class="input" name="name" required placeholder="Project / property name"><input class="input" name="propertyType" required placeholder="Property type"><textarea class="input" name="address" required placeholder="Project address"></textarea><input class="input" name="units" required placeholder="Unit list, comma separated: A-01, A-02"><textarea class="input" name="description" placeholder="Project notes for buyer reference"></textarea>${ui.projectMessage ? `<p class="empty" style="font-weight:800">${esc(ui.projectMessage)}</p>` : ""}<button class="btn primary full">Save project</button></form><div class="stack" style="margin-top:12px">${projects.map((p) => `<div class="empty"><strong>${esc(p.name)}</strong><br>${esc(p.propertyType)} - ${p.units.length} units</div>`).join("")}</div></section>`;
+      }
+      function reportPhotoGrid(photos) {
+        return photos?.length ? `<div class="report-photos">${photos.map((p, i) => `<img src="${p}" alt="Report photo ${i + 1}">`).join("")}</div>` : `<p>No photos uploaded.</p>`;
+      }
+      function openReport() {
+        const inspection = selectedInspection();
+        if (!inspection) return;
+        const property = data.properties.find((p) => p.id === inspection.propertyId);
+        if (!property) return;
+        const project = data.projects.find((p) => p.id === property.projectId);
+        const developer = data.users.find((u) => u.id === project?.developerId);
+        const buyer = data.users.find((u) => u.id === inspection.buyerId);
+        const floors = data.floors.filter((f) => f.inspectionId === inspection.id);
+        const defects = data.defects.filter((d) => d.inspectionId === inspection.id);
+        const floorHtml = floors.map((floor) => {
+          const floorDefects = defects.filter((d) => d.floorId === floor.id);
+          const zonesHtml = zones.map((z) => {
+            const count = floorDefects.filter((d) => d.zoneNumber === z).length;
+            return `<div class="${count ? "report-zone filled" : "report-zone"}"><strong>${z}</strong><span>${count ? `${count} defect${count === 1 ? "" : "s"}` : ""}</span></div>`;
+          }).join("");
+          const defectHtml = floorDefects.map((defect) => {
+            const itemHistory = data.history.filter((h) => h.defectId === defect.id).map((h) => `<li>${new Date(h.createdAt).toLocaleString()} - ${esc(h.toStatus)} - ${esc(h.role)}${h.note ? `: ${esc(h.note)}` : ""}</li>`).join("");
+            return `<article class="report-defect"><h3>Zone ${defect.zoneNumber}: ${esc(defect.title)}</h3><p><strong>Category:</strong> ${esc(defect.category)}</p><p><strong>Description:</strong> ${esc(defect.description)}</p><p><strong>Status:</strong> ${esc(defect.status)}</p><p><strong>Contractor / PIC:</strong> ${esc(defect.contractor || "-")}</p><p><strong>Repair remarks:</strong> ${esc(defect.repairRemarks || "-")}</p><p><strong>Created:</strong> ${new Date(defect.createdAt).toLocaleString()}</p><h4>Buyer defect photos</h4>${reportPhotoGrid(defect.buyerPhotoUrls)}<h4>Developer repair photos</h4>${reportPhotoGrid(defect.repairPhotoUrls)}${itemHistory ? `<h4>Status history</h4><ol>${itemHistory}</ol>` : ""}</article>`;
+          }).join("");
+          return `<section><h2>${esc(floor.otherName || floor.name)}</h2><h3>Floor layout with 3 x 3 matrix overlay</h3><div class="report-layout-wrap">${floor.layoutPhotoUrl ? `<img class="report-layout" src="${floor.layoutPhotoUrl}" alt="Floor layout">` : `<div class="report-layout-empty">No layout uploaded.</div>`}<div class="report-zones report-overlay">${zonesHtml}</div></div>${defectHtml || "<p>No defects recorded on this floor.</p>"}</section>`;
+        }).join("");
+        const popup = window.open("", "_blank", "width=900,height=1200");
+        if (!popup) return;
+        popup.document.write(`<!doctype html><html><head><title>Defect Report - ${esc(property.unitNumber)}</title><style>body{font-family:Arial,sans-serif;color:#17201f;margin:28px;line-height:1.45}button{padding:10px 14px;border:0;border-radius:8px;background:#0f766e;color:white;font-weight:700}h1{color:#0f766e;margin-bottom:8px}h2{border-bottom:2px solid #0f766e;padding-bottom:8px;margin-top:30px}.report-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 22px;margin:18px 0}.report-layout-wrap{position:relative;width:100%;max-width:680px;margin:0 0 18px;border:1px solid #ccd8d5;border-radius:8px;overflow:hidden;background:#fff}.report-layout{display:block;width:100%;aspect-ratio:3/4;object-fit:contain}.report-layout-empty{aspect-ratio:3/4;display:grid;place-items:center;color:#64748b;background:#f8fafc}.report-zones{display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden}.report-zones.report-overlay{position:absolute;inset:0}.report-zone{min-height:76px;border:1px solid rgba(15,23,42,.55);display:grid;place-items:center;text-align:center;color:#17201f;background:rgba(255,255,255,.2)}.report-zone strong{display:block;color:#17201f;font-size:20px}.report-zone span{font-size:11px}.report-zone.filled{background:rgba(20,184,166,.38);color:#115e59;font-weight:bold}.report-defect{break-inside:avoid;border:1px solid #ccd8d5;border-radius:10px;padding:16px;margin:16px 0}.report-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.report-photos img{width:100%;height:160px;object-fit:cover;border-radius:8px;border:1px solid #dbe7e4}@media print{button{display:none}body{margin:14px}.report-layout-wrap{max-width:620px}}@media(max-width:720px){.report-meta{grid-template-columns:1fr}}</style></head><body><button onclick="window.print()">Print / Save as PDF</button><h1>Property Defect Inspection & Repair Report</h1><div class="report-meta"><div><strong>Project:</strong> ${esc(property.projectName)}</div><div><strong>Property type:</strong> ${esc(project?.propertyType || "-")}</div><div><strong>Project address:</strong> ${esc(project?.address || "-")}</div><div><strong>Developer:</strong> ${esc(developer?.name || "-")}</div><div><strong>Unit:</strong> ${esc(property.unitNumber)}</div><div><strong>Buyer:</strong> ${esc(property.buyerName)}</div><div><strong>Buyer account:</strong> ${esc(buyer?.username || "-")}</div><div><strong>Contact:</strong> ${esc(property.contactNumber)}</div><div><strong>Status:</strong> ${esc(inspection.status)}</div><div><strong>Total floors:</strong> ${floors.length}</div><div><strong>Total defects:</strong> ${defects.length}</div><div><strong>Created:</strong> ${new Date(inspection.createdAt).toLocaleString()}</div><div><strong>Updated:</strong> ${new Date(inspection.updatedAt).toLocaleString()}</div><div><strong>Submitted:</strong> ${inspection.submittedAt ? new Date(inspection.submittedAt).toLocaleString() : "-"}</div></div>${floorHtml}</body></html>`);
+        popup.document.close();
+      }
+      function bind() {
+        document.querySelectorAll("[data-role]").forEach((b) => b.onclick = () => { ui.role = b.dataset.role; ui.authMode = "login"; ui.authError = ""; render(); });
+        document.querySelectorAll("[data-auth-mode]").forEach((b) => b.onclick = () => { ui.authMode = b.dataset.authMode; ui.authError = ""; render(); });
+        document.getElementById("authForm")?.addEventListener("submit", (e) => {
+          e.preventDefault(); const f = new FormData(e.target); const role = ui.role; const username = String(f.get("username")).trim().toLowerCase(); const passwordHash = hashPassword(String(f.get("password") || "")); let profile = data.users.find((u) => u.username?.toLowerCase() === username && u.role === role && u.passwordHash === passwordHash);
+          if (!profile) { ui.authError = "Invalid username, password, or role."; render(); return; }
+          setSession({ userId: profile.id });
+        });
+        document.getElementById("registerForm")?.addEventListener("submit", (e) => {
+          e.preventDefault(); const f = new FormData(e.target); const username = String(f.get("username")).trim().toLowerCase(); const password = String(f.get("password") || "");
+          if (password.length < 6) { ui.authError = "Password must be at least 6 characters."; render(); return; }
+          if (data.users.some((u) => u.username?.toLowerCase() === username)) { ui.authError = "Username already exists."; render(); return; }
+          data.users.push({ id: id("usr"), username, passwordHash: hashPassword(password), email: String(f.get("email") || "").trim().toLowerCase(), name: String(f.get("name") || username), phone: String(f.get("phone") || ""), role: "buyer", createdBy: "self-registration", createdAt: now() });
+          ui.authMode = "login"; ui.authError = "Buyer account created. You can log in now."; save(); render();
+        });
+        document.getElementById("accountForm")?.addEventListener("submit", (e) => {
+          e.preventDefault(); const f = new FormData(e.target); const username = String(f.get("username")).trim().toLowerCase(); const password = String(f.get("password") || "");
+          if (password.length < 6) { ui.accountMessage = "Password must be at least 6 characters."; render(); return; }
+          if (data.users.some((u) => u.username?.toLowerCase() === username)) { ui.accountMessage = "Username already exists."; render(); return; }
+          data.users.push({ id: id("usr"), username, passwordHash: hashPassword(password), email: String(f.get("email") || "").trim().toLowerCase(), name: String(f.get("name") || username), role: "developer", createdBy: user().id, createdAt: now() });
+          ui.accountMessage = "Developer login created."; save(); render();
+        });
+        document.getElementById("projectForm")?.addEventListener("submit", (e) => {
+          e.preventDefault(); const f = new FormData(e.target); const units = String(f.get("units") || "").split(",").map((x) => x.trim()).filter(Boolean);
+          data.projects.push({ id: id("proj"), name: String(f.get("name") || "").trim(), developerId: user().id, propertyType: String(f.get("propertyType") || "").trim(), address: String(f.get("address") || "").trim(), units, description: String(f.get("description") || "").trim(), createdAt: now() });
+          ui.projectMessage = "Project saved for buyer selection."; save(); render();
+        });
+        document.getElementById("logout")?.addEventListener("click", () => setSession(null));
+        document.getElementById("newCase")?.addEventListener("submit", (e) => {
+          e.preventDefault(); const f = new FormData(e.target); const propertyId = id("prop"); const inspectionId = id("insp"); const floorId = id("floor"); const t = now();
+          const project = data.projects.find((p) => p.id === String(f.get("projectId") || ""));
+          data.properties.push({ id: propertyId, projectId: project?.id, projectName: project?.name || "", unitNumber: f.get("unitNumber"), buyerName: f.get("buyerName"), contactNumber: f.get("contactNumber"), buyerId: user().id, createdAt: t });
+          data.inspections.push({ id: inspectionId, propertyId, buyerId: user().id, status: "Draft", createdAt: t, updatedAt: t });
+          data.floors.push({ id: floorId, inspectionId, name: "Ground Floor", createdAt: t });
+          ui.selectedInspectionId = inspectionId; ui.selectedFloorId = floorId; save(); render();
+        });
+        document.querySelectorAll("[data-case]").forEach((b) => b.onclick = () => { ui.selectedInspectionId = b.dataset.case; ui.selectedFloorId = null; ui.selectedZone = 1; render(); });
+        document.querySelectorAll("[data-floor]").forEach((b) => b.onclick = () => { ui.selectedFloorId = b.dataset.floor; render(); });
+        document.querySelectorAll("[data-zone]").forEach((b) => b.onclick = () => { ui.selectedZone = Number(b.dataset.zone); render(); });
+        document.getElementById("addFloor")?.addEventListener("submit", (e) => {
+          e.preventDefault(); const f = new FormData(e.target); const floorId = id("floor"); const inspection = selectedInspection();
+          data.floors.push({ id: floorId, inspectionId: inspection.id, name: String(f.get("floorName")), otherName: String(f.get("floorName")) === "Other" ? String(f.get("otherName") || "Other") : "", createdAt: now() });
+          ui.selectedFloorId = floorId; inspection.updatedAt = now(); save(); render();
+        });
+        document.getElementById("editFloor")?.addEventListener("submit", (e) => {
+          e.preventDefault(); const f = new FormData(e.target); const floor = data.floors.find((x) => x.id === ui.selectedFloorId); if (!floor) return;
+          floor.name = String(f.get("floorName")); floor.otherName = floor.name === "Other" ? String(f.get("otherName") || "Other") : ""; selectedInspection().updatedAt = now(); save(); render();
+        });
+        document.getElementById("layoutUpload")?.addEventListener("change", async (e) => {
+          if (!e.target.files?.length) return; const [url] = await fileUrls(e.target.files); const floor = data.floors.find((f) => f.id === ui.selectedFloorId); floor.layoutPhotoUrl = url; save(); render();
+        });
+        document.getElementById("layoutDelete")?.addEventListener("click", () => {
+          const floor = data.floors.find((f) => f.id === ui.selectedFloorId); if (floor) delete floor.layoutPhotoUrl; save(); render();
+        });
+        document.getElementById("defectForm")?.addEventListener("submit", async (e) => {
+          e.preventDefault(); const f = new FormData(e.target); const photoInput = e.target.querySelector('input[name="photos"]'); const photos = photoInput?.files?.length ? await fileUrls(photoInput.files) : []; const inspection = selectedInspection(); const defect = { id: id("def"), inspectionId: inspection.id, floorId: ui.selectedFloorId, zoneNumber: ui.selectedZone, title: f.get("title"), description: f.get("description"), category: f.get("category"), buyerPhotoUrls: photos, repairPhotoUrls: [], status: "Pending", createdAt: now(), updatedAt: now() };
+          data.defects.push(defect); log(defect, null, "Pending", "Defect created by buyer"); inspection.updatedAt = now(); save(); render();
+        });
+        document.querySelectorAll(".repairForm").forEach((form) => form.addEventListener("submit", async (e) => {
+          e.preventDefault(); const f = new FormData(form); const defect = data.defects.find((d) => d.id === form.dataset.defect); const photoInput = form.querySelector('input[name="photos"]'); const newPhotos = photoInput?.files?.length ? await fileUrls(photoInput.files) : []; const old = defect.status; defect.status = String(f.get("status")); defect.contractor = String(f.get("contractor") || ""); defect.repairRemarks = String(f.get("remarks") || ""); defect.repairPhotoUrls.push(...newPhotos); defect.updatedAt = now(); if (old !== defect.status) log(defect, old, defect.status, defect.repairRemarks);
+          const inspection = data.inspections.find((i) => i.id === defect.inspectionId); inspection.status = data.defects.filter((d) => d.inspectionId === inspection.id).every((d) => d.status === "Closed") ? "Closed" : "In Repair"; inspection.updatedAt = now(); save(); render();
+        }));
+        document.querySelectorAll("[data-accept]").forEach((b) => b.onclick = () => { const d = data.defects.find((x) => x.id === b.dataset.accept); const old = d.status; d.status = "Closed"; d.acceptedAt = now(); log(d, old, "Closed", "Buyer accepted repair"); save(); render(); });
+        document.querySelectorAll("[data-reject]").forEach((b) => b.onclick = () => { const d = data.defects.find((x) => x.id === b.dataset.reject); const old = d.status; d.status = "Rejected"; d.rejectedReason = prompt("Reason for rejecting this repair?") || "Buyer rejected repair"; log(d, old, "Rejected", d.rejectedReason); save(); render(); });
+        document.getElementById("submitReport")?.addEventListener("click", () => { const i = selectedInspection(); i.status = "Submitted"; i.submittedAt = now(); i.updatedAt = now(); save(); render(); });
+        document.getElementById("pdf")?.addEventListener("click", () => openReport());
+        ["filterQuery", "filterStatus", "dateFrom", "dateTo"].forEach((x) => document.getElementById(x)?.addEventListener("input", (e) => { ui[x] = e.target.value; render(); }));
+      }
+      render();
+    </script>
+  </body>
+</html>
