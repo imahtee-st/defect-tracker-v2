@@ -4,12 +4,12 @@
   "description": "Inspect property defects, submit reports, and track repairs from a mobile device.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#eef5f3",
-  "theme_color": "#0f766e",
+  "background_color": "#f4f7f5",
+  "theme_color": "#173832",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icons/property-defect.svg",
+      "src": "/brand/multiplex-logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

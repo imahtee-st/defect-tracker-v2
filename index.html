@@ -3,51 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#173832" />
+    <link rel="icon" href="/brand/multiplex-logo.svg" type="image/svg+xml" />
     <title>Property Defect Inspection & Repair Tracker</title>
     <link rel="manifest" href="/manifest.webmanifest" />
     <style>
       :root {
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         color: #17201f;
-        background: #eef5f3;
+        background: #f4f7f5;
       }
       * { box-sizing: border-box; }
-      body { margin: 0; min-width: 320px; min-height: 100vh; background: #eef5f3; }
+      body { margin: 0; min-width: 320px; min-height: 100vh; background: linear-gradient(180deg, rgba(23,56,50,.08), rgba(255,255,255,0) 280px), #f4f7f5; }
       button, input, select, textarea { font: inherit; }
       button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
       .app { min-height: 100vh; }
       .auth { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
-      .shell-header { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #dbe7e4; background: rgba(255,255,255,.95); backdrop-filter: blur(10px); }
+      .shell-header { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #d8dfda; background: rgba(255,255,255,.96); backdrop-filter: blur(10px); }
       .header-inner, .main { max-width: 1120px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
       .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; padding-bottom: 12px; }
       .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-      .brand-icon { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; background: #0f766e; color: #fff; font-weight: 900; }
-      .brand-title { font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .brand-sub { margin-top: 2px; color: #64748b; font-size: 12px; }
+      .brand-icon { width: 82px; height: 48px; border-radius: 8px; display: grid; place-items: center; background: #fff; padding: 6px; box-shadow: inset 0 0 0 1px rgba(199,160,82,.35); }
+      .brand-icon img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+      .brand-title { font-weight: 900; color:#173832; text-transform:uppercase; letter-spacing:.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .brand-sub { margin-top: 2px; color: #64748b; font-size: 12px; font-weight:600; }
       .main { padding-top: 20px; padding-bottom: 32px; }
       .grid { display: grid; gap: 18px; }
       .layout { grid-template-columns: 1fr; }
-      .panel { border: 1px solid #dbe7e4; border-radius: 14px; background: #fff; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.08); }
+      .panel { border: 1px solid #d8dfda; border-radius: 8px; background: #fff; padding: 16px; box-shadow: 0 12px 30px rgba(15,23,42,.07); }
       .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-      .section-head h2 { margin: 0; font-size: 16px; }
-      .count { border-radius: 999px; background: #f1f5f9; padding: 5px 10px; color: #475569; font-size: 12px; font-weight: 800; }
+      .section-head h2 { margin: 0; font-size: 16px; color:#173832; font-weight:900; }
+      .count { border-radius: 999px; background: #f7f1e3; padding: 5px 10px; color: #7a5c1f; font-size: 12px; font-weight: 800; }
       .field { display: grid; gap: 6px; color: #334155; font-size: 13px; font-weight: 700; }
-      .input { width: 100%; border: 1px solid #dbe7e4; border-radius: 10px; background: #fff; padding: 11px 12px; color: #17201f; outline: none; }
-      .input:focus { border-color: #0f766e; box-shadow: 0 0 0 4px #ccfbf1; }
+      .input { width: 100%; border: 1px solid #d8dfda; border-radius: 6px; background: #fff; padding: 11px 12px; color: #17201f; outline: none; }
+      .input:focus { border-color: #c7a052; box-shadow: 0 0 0 4px #eadbb4; }
       textarea.input { min-height: 94px; resize: vertical; }
-      .btn { min-height: 42px; border: 0; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 13px; font-size: 14px; font-weight: 800; }
-      .primary { background: #0f766e; color: #fff; }
-      .secondary { border: 1px solid #dbe7e4; background: #fff; color: #334155; }
+      .btn { min-height: 42px; border: 0; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 13px; font-size: 14px; font-weight: 800; }
+      .primary { background: #173832; color: #fff; }
+      .secondary { border: 1px solid #d8dfda; background: #fff; color: #334155; }
       .danger { background: #dc2626; color: #fff; }
       .full { width: 100%; }
-      .icon-btn { width: 42px; height: 42px; border: 1px solid #dbe7e4; border-radius: 10px; background: #fff; }
-      .role-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; border-radius: 11px; background: #f1f5f9; padding: 4px; margin-bottom: 14px; }
-      .role-tab { border: 0; border-radius: 8px; padding: 10px; color: #64748b; background: transparent; font-weight: 800; }
-      .role-tab.active { background: #fff; color: #0f766e; box-shadow: 0 1px 4px rgba(15,23,42,.08); }
+      .icon-btn { width: 42px; height: 42px; border: 1px solid #d8dfda; border-radius: 6px; background: #fff; }
+      .role-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; border-radius: 8px; background: #eef2ef; padding: 4px; margin-bottom: 14px; }
+      .role-tab { border: 0; border-radius: 6px; padding: 10px; color: #64748b; background: transparent; font-weight: 800; }
+      .role-tab.active { background: #fff; color: #173832; box-shadow: 0 1px 4px rgba(15,23,42,.08); }
       .stack { display: grid; gap: 12px; }
-      .case-card { width: 100%; border: 1px solid #dbe7e4; border-radius: 12px; background: #fff; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; }
-      .case-card.active { border-color: #0f766e; background: #f0fdfa; box-shadow: 0 0 0 2px #ccfbf1; }
+      .case-card { width: 100%; border: 1px solid #d8dfda; border-radius: 8px; background: #fff; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; }
+      .case-card.active { border-color: #c7a052; background: #fbf8ef; box-shadow: 0 0 0 2px #eadbb4; }
       .muted { color: #64748b; font-size: 13px; }
       .badge { border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 800; white-space: nowrap; }
       .badge.Draft, .badge.Pending { background: #f1f5f9; color: #475569; }
@@ -57,35 +59,92 @@
       .badge.Rejected { background: #fee2e2; color: #b91c1c; }
       .badge.Closed { background: #dcfce7; color: #166534; }
       .floor-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
-      .tab { border: 1px solid #dbe7e4; border-radius: 10px; background: #fff; padding: 10px 12px; font-weight: 800; color: #475569; white-space: nowrap; }
-      .tab.active { border-color: #0f766e; color: #0f766e; background: #f0fdfa; }
-      .upload { min-height: 48px; border: 1px dashed #5eead4; border-radius: 10px; background: #f0fdfa; color: #115e59; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; font-weight: 800; text-align: center; }
+      .tab { border: 1px solid #d8dfda; border-radius: 6px; background: #fff; padding: 10px 12px; font-weight: 800; color: #475569; white-space: nowrap; }
+      .tab.active { border-color: #c7a052; color: #173832; background: #fbf8ef; }
+      .upload { min-height: 48px; border: 1px dashed #c7a052; border-radius: 6px; background: #fbf8ef; color: #173832; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; font-weight: 800; text-align: center; }
       .upload input { display: none; }
-      .matrix-wrap { position: relative; overflow: hidden; border: 1px solid #dbe7e4; border-radius: 12px; background: #f1f5f9; }
+      .matrix-wrap { position: relative; overflow: hidden; border: 1px solid #d8dfda; border-radius: 8px; background: #f1f5f9; }
       .layout-img, .layout-placeholder { aspect-ratio: 3 / 4; width: 100%; display: block; object-fit: contain; background: #fff; }
       .layout-placeholder { display: grid; place-items: center; padding: 24px; color: #64748b; text-align: center; }
       .matrix { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
       .zone { position: relative; border: 1px solid rgba(255,255,255,.9); background: rgba(15,23,42,.12); color: #17201f; font-size: 16px; font-weight: 900; }
-      .zone.active { background: rgba(20,184,166,.55); color: #fff; }
+      .zone.active { background: rgba(23,56,50,.65); color: #fff; }
       .zone span:first-child { background: rgba(255,255,255,.92); color: #17201f; border-radius: 999px; padding: 5px 10px; }
       .zone-count { position: absolute; right: 8px; top: 8px; border-radius: 999px; background: #f59e0b; color: #fff; padding: 2px 7px; font-size: 11px; }
-      .defect { border: 1px solid #dbe7e4; border-radius: 12px; background: #fff; padding: 13px; }
+      .defect { border: 1px solid #d8dfda; border-radius: 8px; background: #fff; padding: 13px; }
       .defect-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
       .defect h3 { margin: 0; font-size: 16px; }
       .defect p { margin: 8px 0 0; line-height: 1.55; }
       .photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
-      .photos img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; border: 1px solid #dbe7e4; }
-      .empty { border-radius: 10px; background: #f8fafc; color: #64748b; padding: 12px; font-size: 14px; }
+      .photos img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 6px; border: 1px solid #d8dfda; }
+      .empty { border-radius: 8px; background: #f8fafc; color: #64748b; padding: 12px; font-size: 14px; }
       .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
       .repair-box { margin-top: 12px; border-radius: 10px; background: #f0fdfa; padding: 12px; }
       .report-head { display: flex; flex-direction: column; gap: 14px; }
       .report-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
       .filters { display: grid; gap: 10px; }
+      .auth { padding: 0; background:
+        radial-gradient(circle at 18% 15%, rgba(199,160,82,.22), transparent 28%),
+        linear-gradient(135deg, #173832 0%, #173832 43%, #f4f7f5 43%, #f4f7f5 100%);
+      }
+      .auth-luxe { width: min(1120px, calc(100vw - 28px)); display: grid; grid-template-columns: 1.05fr .95fr; min-height: 680px; border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,.28); box-shadow: 0 30px 80px rgba(15,23,42,.28); background: #fff; }
+      .auth-story { position: relative; padding: 42px; color: #fff; background:
+        linear-gradient(rgba(23,56,50,.76), rgba(23,56,50,.92)),
+        linear-gradient(135deg, rgba(199,160,82,.22), rgba(255,255,255,0));
+        display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
+      }
+      .auth-story::after { content: ""; position: absolute; inset: auto -80px -120px auto; width: 330px; height: 330px; border: 1px solid rgba(199,160,82,.42); border-radius: 999px; }
+      .auth-mark { width: 132px; height: 74px; border-radius: 14px; background: #fff; display: grid; place-items: center; padding: 10px; box-shadow: inset 0 0 0 2px rgba(199,160,82,.45); }
+      .auth-mark img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+      .auth-story h1 { margin: 28px 0 14px; font-size: clamp(34px, 5vw, 58px); line-height: .98; letter-spacing: -.03em; }
+      .auth-story p { max-width: 460px; color: rgba(255,255,255,.78); font-size: 15px; line-height: 1.7; }
+      .auth-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+      .auth-pills span { border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 8px 12px; color: rgba(255,255,255,.86); font-size: 12px; font-weight: 800; background: rgba(255,255,255,.07); }
+      .auth-form-panel { padding: 42px; display: flex; flex-direction: column; justify-content: center; }
+      .eyebrow { color: #9b7a35; text-transform: uppercase; letter-spacing: .12em; font-size: 11px; font-weight: 900; }
+      .auth-form-panel h2 { margin: 8px 0 22px; color: #173832; font-size: 28px; line-height: 1.08; }
+      .shell-header { background: #173832; border-bottom: 1px solid rgba(199,160,82,.35); box-shadow: 0 16px 40px rgba(15,23,42,.12); }
+      .shell-header .brand-title { color: #fff; }
+      .shell-header .brand-sub { color: rgba(255,255,255,.72); }
+      .shell-header .brand-icon { background: #fff; color: #173832; }
+      .shell-header .icon-btn { background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.18); }
+      .main { max-width: 1240px; padding-top: 28px; }
+      .portal-banner { position: relative; overflow: hidden; border-radius: 16px; padding: 24px; margin-bottom: 20px; background: linear-gradient(135deg, #173832, #245348); color: #fff; box-shadow: 0 24px 55px rgba(23,56,50,.2); }
+      .portal-banner::after { content: ""; position: absolute; right: -60px; top: -70px; width: 240px; height: 240px; border: 1px solid rgba(199,160,82,.42); border-radius: 999px; }
+      .portal-banner h1 { margin: 4px 0 8px; font-size: clamp(26px, 4vw, 42px); letter-spacing: -.03em; }
+      .portal-banner p { margin: 0; max-width: 680px; color: rgba(255,255,255,.76); line-height: 1.6; }
+      .portal-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; max-width: 620px; }
+      .portal-kpis div { border: 1px solid rgba(255,255,255,.16); border-radius: 10px; padding: 12px; background: rgba(255,255,255,.08); }
+      .portal-kpis strong { display: block; font-size: 22px; color: #fff; }
+      .portal-kpis span { color: rgba(255,255,255,.68); font-size: 12px; font-weight: 700; }
+      .panel { border-color: rgba(216,223,218,.95); }
+      .panel:hover { box-shadow: 0 18px 42px rgba(15,23,42,.09); }
+      .case-card, .tab, .input, .btn, .upload { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease; }
+      .case-card:hover, .btn:hover, .tab:hover { transform: translateY(-1px); }
+      .primary:hover { background: #0f2924; box-shadow: 0 10px 22px rgba(23,56,50,.2); }
+      .secondary:hover { border-color: #c7a052; background: #fbf8ef; }
+      .layout { gap: 22px; }
+      .sidebar .panel { background: rgba(255,255,255,.92); backdrop-filter: blur(10px); }
+      .workspace > .panel, .workspace .panel { border-radius: 14px; }
+      .matrix-wrap { box-shadow: inset 0 0 0 1px rgba(255,255,255,.6); }
+      .repair-box { background: linear-gradient(135deg, #f4fbf8, #fbf8ef); border: 1px solid #d8dfda; border-radius: 8px; }
+      .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .stat-card { border-radius: 14px; padding: 18px; background: linear-gradient(180deg,#fff,#fbfcfb); border: 1px solid #d8dfda; box-shadow: 0 12px 30px rgba(15,23,42,.06); }
+      .stat-card p { margin: 0; color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; font-weight: 900; }
+      .stat-card h2 { margin: 8px 0 0; font-size: 32px; color: #173832; }
+      .list-card { border: 1px solid #d8dfda; border-radius: 12px; background: #fbfcfb; padding: 14px; }
+      .list-card strong { color: #173832; }
       @media (min-width: 900px) {
-        .layout { grid-template-columns: 360px minmax(0, 1fr); align-items: start; }
+        .layout { grid-template-columns: 390px minmax(0, 1fr); align-items: start; }
         .workspace { grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); }
         .report-head { flex-direction: row; align-items: flex-start; justify-content: space-between; }
         .report-actions { display: flex; }
+      }
+      @media (max-width: 860px) {
+        .auth-luxe { grid-template-columns: 1fr; min-height: auto; }
+        .auth-story { min-height: 340px; padding: 28px; }
+        .auth-form-panel { padding: 24px; }
+        .portal-kpis, .stat-grid { grid-template-columns: 1fr; }
       }
       @media print {
         .shell-header, .sidebar, .no-print, .upload, form, .role-tabs { display: none !important; }
@@ -294,23 +353,37 @@
         const isRegister = ui.role === "buyer" && ui.authMode === "register";
         const defaultUser = ui.role === "buyer" ? "buyer1" : ui.role === "developer" ? "devadmin" : "owner";
         const defaultPass = ui.role === "buyer" ? "buyer123" : ui.role === "developer" ? "admin123" : "owner123";
-        return `<main class="auth"><section class="panel" style="max-width:440px;width:100%">
-          <div class="brand" style="margin-bottom:18px"><div class="brand-icon">OK</div><div><div class="brand-title">Property Defect Inspection & Repair Tracker</div><div class="brand-sub">Website model for buyers, developers, and admin</div></div></div>
-          <div class="role-tabs" style="grid-template-columns:repeat(3,1fr)"><button class="role-tab ${ui.role === "buyer" ? "active" : ""}" data-role="buyer">Buyer</button><button class="role-tab ${ui.role === "developer" ? "active" : ""}" data-role="developer">Developer</button><button class="role-tab ${ui.role === "admin" ? "active" : ""}" data-role="admin">Admin</button></div>
-          ${ui.role === "buyer" ? `<div class="role-tabs"><button class="role-tab ${ui.authMode === "login" ? "active" : ""}" data-auth-mode="login">Login</button><button class="role-tab ${ui.authMode === "register" ? "active" : ""}" data-auth-mode="register">Free register</button></div>` : ""}
-          <form id="${isRegister ? "registerForm" : "authForm"}" class="stack">
-            ${isRegister ? `<label class="field">Buyer name<input class="input" name="name" required></label><label class="field">Email<input class="input" type="email" name="email" required></label><label class="field">Contact number<input class="input" name="phone"></label>` : ""}
-            <label class="field">Username<input class="input" name="username" autocomplete="username" required value="${isRegister ? "" : defaultUser}"></label>
-            <label class="field">Password<input class="input" type="password" name="password" autocomplete="${isRegister ? "new-password" : "current-password"}" required value="${isRegister ? "" : defaultPass}"></label>
-            ${ui.authError ? `<p class="empty" style="background:#fee2e2;color:#b91c1c;font-weight:800">${esc(ui.authError)}</p>` : ""}
-            <p class="empty">Buyer registration is free. Seller/developer access is created by admin. Demo: owner / owner123, devadmin / admin123, buyer1 / buyer123.</p>
-            <button class="btn primary full">${isRegister ? "Register free" : "Log in"}</button>
-          </form>
+        return `<main class="auth"><section class="auth-luxe">
+          <div class="auth-story">
+            <div>
+              <div class="auth-mark"><img src="/brand/multiplex-logo.svg" alt="Multiplex Property Group"></div>
+              <h1>Inspection confidence for every Multiplex home.</h1>
+              <p>A polished handover portal for buyers, developers and repair teams to document defects, track progress and close every item with clarity.</p>
+              <div class="auth-pills"><span>Buyer handover</span><span>Repair tracking</span><span>Matrix reporting</span><span>PDF records</span></div>
+            </div>
+            <p style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:#c7a052">Trusted property development since 2001</p>
+          </div>
+          <div class="auth-form-panel">
+            <span class="eyebrow">Multiplex digital handover</span>
+            <h2>${isRegister ? "Create your buyer account" : "Sign in to your portal"}</h2>
+            <div class="role-tabs" style="grid-template-columns:repeat(3,1fr)"><button class="role-tab ${ui.role === "buyer" ? "active" : ""}" data-role="buyer">Buyer</button><button class="role-tab ${ui.role === "developer" ? "active" : ""}" data-role="developer">Developer</button><button class="role-tab ${ui.role === "admin" ? "active" : ""}" data-role="admin">Admin</button></div>
+            ${ui.role === "buyer" ? `<div class="role-tabs"><button class="role-tab ${ui.authMode === "login" ? "active" : ""}" data-auth-mode="login">Login</button><button class="role-tab ${ui.authMode === "register" ? "active" : ""}" data-auth-mode="register">Free register</button></div>` : ""}
+            <form id="${isRegister ? "registerForm" : "authForm"}" class="stack">
+              ${isRegister ? `<label class="field">Buyer name<input class="input" name="name" required></label><label class="field">Email<input class="input" type="email" name="email" required></label><label class="field">Contact number<input class="input" name="phone"></label>` : ""}
+              <label class="field">Username<input class="input" name="username" autocomplete="username" required value="${isRegister ? "" : defaultUser}"></label>
+              <label class="field">Password<input class="input" type="password" name="password" autocomplete="${isRegister ? "new-password" : "current-password"}" required value="${isRegister ? "" : defaultPass}"></label>
+              ${ui.authError ? `<p class="empty" style="background:#fee2e2;color:#b91c1c;font-weight:800">${esc(ui.authError)}</p>` : ""}
+              <p class="empty">Buyer registration is free. Seller/developer access is created by admin. Demo: owner / owner123, devadmin / admin123, buyer1 / buyer123.</p>
+              <button class="btn primary full">${isRegister ? "Register free" : "Log in"}</button>
+            </form>
+          </div>
         </section></main>`;
       }
       function shell2(current) {
         const roleLabel = current.role === "developer" ? "Developer" : current.role === "admin" ? "Admin" : "Buyer";
-        return `<div class="app"><header class="shell-header"><div class="header-inner"><div class="brand"><div class="brand-icon">OK</div><div><div class="brand-title">Property Defect Tracker</div><div class="brand-sub">${esc(current.name)} - ${roleLabel}</div></div></div><button class="icon-btn" id="logout" title="Log out">Out</button></div></header><main class="main"><div class="panel no-print" style="margin-bottom:18px;color:#475569">Backend mode: Local MVP storage. React/Supabase source files are in the project folder.</div>${current.role === "admin" ? admin2() : current.role === "buyer" ? buyer2(current) : developer2(current)}</main></div>`;
+        const totalDefects = data.defects.length;
+        const submitted = data.inspections.filter((i) => i.status !== "Draft").length;
+        return `<div class="app"><header class="shell-header"><div class="header-inner"><div class="brand"><div class="brand-icon"><img src="/brand/multiplex-logo.svg" alt="Multiplex Property Group"></div><div><div class="brand-title">Multiplex Property Group</div><div class="brand-sub">Defect Inspection & Repair Tracker - ${esc(current.name)} - ${roleLabel}</div></div></div><button class="icon-btn" id="logout" title="Log out">Out</button></div></header><main class="main"><section class="portal-banner no-print"><span class="eyebrow">Handover quality portal</span><h1>Defect tracking, refined for modern property delivery.</h1><p>Capture floor plans, locate issues on a 3 x 3 matrix, manage repair evidence and produce clean handover reports from one mobile-first workspace.</p><div class="portal-kpis"><div><strong>${data.projects.length}</strong><span>Projects</span></div><div><strong>${submitted}</strong><span>Submitted reports</span></div><div><strong>${totalDefects}</strong><span>Recorded defects</span></div></div></section>${current.role === "admin" ? admin2() : current.role === "buyer" ? buyer2(current) : developer2(current)}</main></div>`;
       }
       function buyer2(current) {
         const inspections = data.inspections.filter((i) => i.buyerId === current.id).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -341,15 +414,15 @@
       function admin2() {
         const developers = data.users.filter((u) => u.role === "developer");
         const buyers = data.users.filter((u) => u.role === "buyer");
-        return `<div class="grid layout"><aside class="sidebar stack">${accountManager2()}</aside><section class="stack"><div class="grid" style="grid-template-columns:repeat(3,1fr)"><div class="panel"><p class="muted">Developers</p><h2>${developers.length}</h2></div><div class="panel"><p class="muted">Buyers</p><h2>${buyers.length}</h2></div><div class="panel"><p class="muted">Projects</p><h2>${data.projects.length}</h2></div></div><section class="panel"><div class="section-head"><h2>Developer users</h2><span class="count">${developers.length}</span></div><div class="stack">${developers.map((d) => `<div class="empty"><strong>${esc(d.name)}</strong><br>${esc(d.username)} - ${esc(d.email)}</div>`).join("")}</div></section><section class="panel"><div class="section-head"><h2>Project reference list</h2><span class="count">${data.projects.length}</span></div><div class="stack">${data.projects.map((p) => `<div class="empty"><strong>${esc(p.name)}</strong><br>${esc(p.propertyType)} - ${esc(p.address)}<br>${p.units.length} units</div>`).join("")}</div></section></section></div>`;
+        return `<div class="grid layout"><aside class="sidebar stack">${accountManager2()}</aside><section class="stack"><div class="stat-grid"><div class="stat-card"><p>Developers</p><h2>${developers.length}</h2></div><div class="stat-card"><p>Buyers</p><h2>${buyers.length}</h2></div><div class="stat-card"><p>Projects</p><h2>${data.projects.length}</h2></div></div><section class="panel"><div class="section-head"><h2>Developer users</h2><span class="count">${developers.length}</span></div><div class="stack">${developers.map((d) => `<div class="list-card"><strong>${esc(d.name)}</strong><br><span class="muted">${esc(d.username)} - ${esc(d.email)}</span></div>`).join("")}</div></section><section class="panel"><div class="section-head"><h2>Project reference list</h2><span class="count">${data.projects.length}</span></div><div class="stack">${data.projects.map((p) => `<div class="list-card"><strong>${esc(p.name)}</strong><br><span class="muted">${esc(p.propertyType)} - ${esc(p.address)} - ${p.units.length} units</span></div>`).join("")}</div></section></section></div>`;
       }
       function accountManager2() {
         const assigned = data.users.filter((u) => u.createdBy === user().id && u.role === "developer");
-        return `<section class="panel"><div class="section-head"><h2>Admin developer access</h2><span class="count">${assigned.length}</span></div><form id="accountForm" class="stack"><p class="empty">Only admin can create seller/developer login access. Buyers register free.</p><input class="input" name="name" required placeholder="Developer / seller name"><input class="input" name="username" required autocomplete="off" placeholder="Username"><input class="input" name="password" required type="password" placeholder="Temporary password"><input class="input" name="email" required type="email" placeholder="Email">${ui.accountMessage ? `<p class="empty" style="font-weight:800">${esc(ui.accountMessage)}</p>` : ""}<button class="btn primary full">Create developer</button></form><div class="stack" style="margin-top:12px">${assigned.map((u) => `<div class="empty"><strong>${esc(u.name)}</strong><br>${esc(u.username)} - developer</div>`).join("")}</div></section>`;
+        return `<section class="panel"><div class="section-head"><h2>Admin developer access</h2><span class="count">${assigned.length}</span></div><form id="accountForm" class="stack"><p class="empty">Only admin can create seller/developer login access. Buyers register free.</p><input class="input" name="name" required placeholder="Developer / seller name"><input class="input" name="username" required autocomplete="off" placeholder="Username"><input class="input" name="password" required type="password" placeholder="Temporary password"><input class="input" name="email" required type="email" placeholder="Email">${ui.accountMessage ? `<p class="empty" style="font-weight:800">${esc(ui.accountMessage)}</p>` : ""}<button class="btn primary full">Create developer</button></form><div class="stack" style="margin-top:12px">${assigned.map((u) => `<div class="list-card"><strong>${esc(u.name)}</strong><br><span class="muted">${esc(u.username)} - developer</span></div>`).join("")}</div></section>`;
       }
       function projectManager2() {
         const projects = data.projects.filter((p) => p.developerId === user().id);
-        return `<section class="panel"><div class="section-head"><h2>Project details</h2><span class="count">${projects.length}</span></div><form id="projectForm" class="stack"><input class="input" name="name" required placeholder="Project / property name"><input class="input" name="propertyType" required placeholder="Property type"><textarea class="input" name="address" required placeholder="Project address"></textarea><input class="input" name="units" required placeholder="Unit list, comma separated: A-01, A-02"><textarea class="input" name="description" placeholder="Project notes for buyer reference"></textarea>${ui.projectMessage ? `<p class="empty" style="font-weight:800">${esc(ui.projectMessage)}</p>` : ""}<button class="btn primary full">Save project</button></form><div class="stack" style="margin-top:12px">${projects.map((p) => `<div class="empty"><strong>${esc(p.name)}</strong><br>${esc(p.propertyType)} - ${p.units.length} units</div>`).join("")}</div></section>`;
+        return `<section class="panel"><div class="section-head"><h2>Project details</h2><span class="count">${projects.length}</span></div><form id="projectForm" class="stack"><input class="input" name="name" required placeholder="Project / property name"><input class="input" name="propertyType" required placeholder="Property type"><textarea class="input" name="address" required placeholder="Project address"></textarea><input class="input" name="units" required placeholder="Unit list, comma separated: A-01, A-02"><textarea class="input" name="description" placeholder="Project notes for buyer reference"></textarea>${ui.projectMessage ? `<p class="empty" style="font-weight:800">${esc(ui.projectMessage)}</p>` : ""}<button class="btn primary full">Save project</button></form><div class="stack" style="margin-top:12px">${projects.map((p) => `<div class="list-card"><strong>${esc(p.name)}</strong><br><span class="muted">${esc(p.propertyType)} - ${p.units.length} units</span></div>`).join("")}</div></section>`;
       }
       function reportPhotoGrid(photos) {
         return photos?.length ? `<div class="report-photos">${photos.map((p, i) => `<img src="${p}" alt="Report photo ${i + 1}">`).join("")}</div>` : `<p>No photos uploaded.</p>`;
